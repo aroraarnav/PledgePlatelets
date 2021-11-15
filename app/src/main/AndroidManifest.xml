@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PledgePlatelets">
         <activity
+            android:name=".DonorActivity"
+            android:exported="false" />
+        <activity
             android:name=".OtpActivity"
             android:exported="false" />
         <!--

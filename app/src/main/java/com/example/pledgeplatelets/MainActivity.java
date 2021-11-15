@@ -23,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedIn", false)) {
+            Intent intent = new Intent(this, DonorActivity.class);
+            startActivity(intent);
+        }
+
         // ActionBar
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Welcome to Pledge Platelets");

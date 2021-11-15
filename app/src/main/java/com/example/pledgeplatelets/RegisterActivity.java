@@ -34,7 +34,6 @@ import java.util.Locale;
 public class RegisterActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, DatePickerDialog.OnDateSetListener {
 
     private DatabaseReference reference;
-    private String databaseUrl;
     private String selectedLocation;
     private String selectedBirthDay;
 
@@ -53,8 +52,6 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-        databaseUrl = "https://pledge-platelets-default-rtdb.firebaseio.com/";
 
         // Initialisations
         locationSpinner = (Spinner) findViewById(R.id.locationSpinner);
@@ -88,7 +85,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         locationSpinner.setAdapter(adapter);
         locationSpinner.setOnItemSelectedListener(this);
 
-        reference = FirebaseDatabase.getInstance(databaseUrl).getReference().child("Donors");
+        reference = FirebaseDatabase.getInstance().getReference().child("Donors");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
