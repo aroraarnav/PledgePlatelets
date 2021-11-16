@@ -23,10 +23,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedIn", false)) {
-            Intent intent = new Intent(this, DonorActivity.class);
-            startActivity(intent);
-        }
+        // Checking for Login Sessions
+
+//        if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInDonor", false)) {
+//            // Take to Donor Page
+//            Intent intent = new Intent(this, DonorActivity.class);
+//            startActivity(intent);
+//        }
+//
+//        if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInAdmin", false)) {
+//            // Take to Admin Page
+//            Intent intent = new Intent(this, AdminActivity.class);
+//            startActivity(intent);
+//        }
+
+
 
         // ActionBar
         ActionBar actionBar = getSupportActionBar();
@@ -36,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
         adminButton = (Button) findViewById(R.id.adminButton);
         donorButton = (Button) findViewById(R.id.donorButton);
         policyButton = (Button) findViewById(R.id.policyButton);
+
+        adminButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent (getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
         policyButton.setOnClickListener(new View.OnClickListener() {
             @Override

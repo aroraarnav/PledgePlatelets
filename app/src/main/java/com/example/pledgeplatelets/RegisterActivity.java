@@ -44,6 +44,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     private EditText medicalHistoryEditText;
     private EditText nameEditText;
     private EditText phoneEditText;
+    private EditText localityEditText;
 
     private Button registerButton;
 
@@ -60,6 +61,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         medicalHistoryEditText = (EditText) findViewById(R.id.medicalHistoryEditText);
         nameEditText = (EditText) findViewById(R.id.nameEditText);
         phoneEditText = (EditText) findViewById(R.id.phoneEditText);
+        localityEditText = (EditText) findViewById(R.id.localityEditText);
 
         registerButton = (Button) findViewById(R.id.registerButton);
 
@@ -116,12 +118,13 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         String phone = phoneEditText.getText().toString();
         String birthday = birthdayEditText.getText().toString();
         String medicalHistory = medicalHistoryEditText.getText().toString();
+        String locality = localityEditText.getText().toString();
 
         if (medicalHistory.replaceAll("\\s+", "").equals("")) {
             medicalHistory = "None";
         }
 
-        if (name.equals("") || phone.equals("") || birthday.equals("") || selectedLocation.equals("SELECT YOUR LOCATION")) {
+        if (name.equals("") || phone.equals("") || birthday.equals("") || selectedLocation.equals("SELECT YOUR LOCATION") || locality.equals("")) {
             Toast.makeText(this, "One or more fields have been left empty. Please fill all required fields.", Toast.LENGTH_LONG).show();
         } else if (phone.length() != 10) {
             Toast.makeText(this, "The phone number entered is invalid. Please try again.", Toast.LENGTH_SHORT).show();
@@ -134,6 +137,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
             intent.putExtra("birthday", birthday);
             intent.putExtra("location", selectedLocation);
             intent.putExtra("medicalHistory", medicalHistory);
+            intent.putExtra("locality", locality);
 
             startActivity(intent);
 

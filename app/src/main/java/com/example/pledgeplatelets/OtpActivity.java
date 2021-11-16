@@ -33,6 +33,7 @@ public class OtpActivity extends AppCompatActivity {
     private String location;
     private String medicalHistory;
     private String birthday;
+    private String locality;
 
     // Items
     private EditText otpEditText;
@@ -61,6 +62,7 @@ public class OtpActivity extends AppCompatActivity {
         otpEditText = (EditText) findViewById(R.id.otpEditText);
 
         name = getIntent().getStringExtra("name");
+        locality = getIntent().getStringExtra("locality");
         phone = getIntent().getStringExtra("phone");
         location = getIntent().getStringExtra("location");
         medicalHistory = getIntent().getStringExtra("medicalHistory");
@@ -135,10 +137,11 @@ public class OtpActivity extends AppCompatActivity {
 
     public void successfulRegistration () {
         // Entering user details on Firebase
-        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
         userKey = reference.child("Donors").child(location).push().getKey();
 
         reference.child("Donors").child(location).child(userKey).child("Name").setValue(name);
+        reference.child("Donors").child(location).child(userKey).child("Locality").setValue(locality);
+        reference.child("Donors").child(location).child(userKey).child("Key").setValue(userKey);
         reference.child("Donors").child(location).child(userKey).child("Birthday").setValue(birthday);
         reference.child("Donors").child(location).child(userKey).child("Phone").setValue(phone);
         reference.child("Donors").child(location).child(userKey).child("Medical History").setValue(medicalHistory);
@@ -146,7 +149,7 @@ public class OtpActivity extends AppCompatActivity {
         // Saving donor login session
         SharedPreferences.Editor editor = getSharedPreferences("login", MODE_PRIVATE).edit();
         editor.putString("key", userKey).apply();
-        editor.putBoolean("loggedIn", true).apply();
+        editor.putBoolean("loggedInDonor", true).apply();
 
         // Donor screen
         Intent intent = new Intent(this, DonorActivity.class);
