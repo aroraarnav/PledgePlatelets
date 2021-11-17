@@ -55,18 +55,13 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
     private ArrayList<String> donorAges;
 
     // Strings
-    String facilityName;
-    String facilityPhone;
     String selectedLocation;
-    String CLICKATELL_KEY;
-    String messageContent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
-
-        CLICKATELL_KEY = "b8wbV-efSxqmwm93i6ijAw==";
 
         // ActionBar
         ActionBar actionBar = getSupportActionBar();
@@ -188,7 +183,7 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
 
                                     // Null Listener
                                     .setNegativeButton(android.R.string.no, null)
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setIcon(android.R.drawable.ic_menu_call)
                                     .show();
 
                         }

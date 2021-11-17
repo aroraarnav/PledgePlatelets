@@ -149,6 +149,7 @@ public class OtpActivity extends AppCompatActivity {
         // Saving donor login session
         SharedPreferences.Editor editor = getSharedPreferences("login", MODE_PRIVATE).edit();
         editor.putString("key", userKey).apply();
+        editor.putString("location", location).apply();
         editor.putBoolean("loggedInDonor", true).apply();
 
         // Donor screen
