@@ -73,14 +73,6 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
             }
         });
 
-        // DatePicker
-        birthdayEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDatePicker();
-            }
-        });
-
         // Extracting available locations
         final ArrayList <String> locationList = new ArrayList <> ();
         final ArrayAdapter adapter = new ArrayAdapter <String> (this, R.layout.spinner_item, locationList);
@@ -116,7 +108,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         // Data
         String name = nameEditText.getText().toString();
         String phone = phoneEditText.getText().toString();
-        String birthday = birthdayEditText.getText().toString();
+        String age = birthdayEditText.getText().toString();
         String medicalHistory = medicalHistoryEditText.getText().toString();
         String locality = localityEditText.getText().toString();
 
@@ -124,56 +116,27 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
             medicalHistory = "None";
         }
 
-        if (name.equals("") || phone.equals("") || birthday.equals("") || selectedLocation.equals("SELECT YOUR LOCATION") || locality.equals("")) {
+        if (name.equals("") || phone.equals("") || age.equals("") || selectedLocation.equals("SELECT YOUR LOCATION") || locality.equals("")) {
             Toast.makeText(this, "One or more fields have been left empty. Please fill all required fields.", Toast.LENGTH_LONG).show();
         } else if (phone.length() != 10) {
             Toast.makeText(this, "The phone number entered is invalid. Please try again.", Toast.LENGTH_SHORT).show();
+        } else if (Integer.parseInt(age) < 18 || Integer.parseInt(age) > 65 ) {
+            Toast.makeText(this, "You do not meet the age criteria to donate.", Toast.LENGTH_SHORT).show();
         } else {
-            // All details have been entered successfully
-            Intent intent = new Intent(getApplicationContext(), OtpActivity.class);
+                // All details have been entered successfully
+                Intent intent = new Intent(getApplicationContext(), OtpActivity.class);
 
-            intent.putExtra("name", name);
-            intent.putExtra("phone", ("+91" + phone));
-            intent.putExtra("birthday", birthday);
-            intent.putExtra("location", selectedLocation);
-            intent.putExtra("medicalHistory", medicalHistory);
-            intent.putExtra("locality", locality);
+                intent.putExtra("name", name);
+                intent.putExtra("phone", ("+91" + phone));
+                intent.putExtra("age", age);
+                intent.putExtra("location", selectedLocation);
+                intent.putExtra("medicalHistory", medicalHistory);
+                intent.putExtra("locality", locality);
 
-            startActivity(intent);
+                startActivity(intent);
 
+            }
         }
-    }
-
-    public void openDatePicker () {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
-                this,
-                Calendar.getInstance().get(Calendar.YEAR),
-                Calendar.getInstance().get(Calendar.MONTH),
-                Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-
-        );
-
-        datePickerDialog.show();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault());
-        String date = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault()).format(new Date());
-        try {
-            Date finalDate = dateFormat.parse(date);
-
-            // MAX Date for DatePicker
-            Calendar max = Calendar.getInstance();
-            max.setTime(finalDate);
-            max.add(Calendar.YEAR, -18);
-            Date maxDate = max.getTime();
-
-            long maxLong = maxDate.getTime();
-            datePickerDialog.getDatePicker().setMaxDate(maxLong);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

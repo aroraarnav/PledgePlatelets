@@ -5,9 +5,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +52,7 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
     private ArrayList<String> donorHistory;
     private ArrayList<String> donorPhones;
     private ArrayList<String> donorKeys;
-    private ArrayList<String> donorBirthdays;
+    private ArrayList<String> donorAges;
 
     // Strings
     String facilityName;
@@ -76,7 +82,7 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
         donorLocality = new ArrayList<String> ();
         donorPhones = new ArrayList<String> ();
         donorKeys = new ArrayList<String> ();
-        donorBirthdays = new ArrayList<String> ();
+        donorAges = new ArrayList<String> ();
 
         // Extracting Locations
         // Extracting available locations
@@ -128,14 +134,14 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
                         String history = dataSnapshot.child("Medical History").getValue().toString();
                         String locality = dataSnapshot.child("Locality").getValue().toString();
                         String key = dataSnapshot.child("Key").getValue().toString();
-                        String birthday = dataSnapshot.child("Birthday").getValue().toString();
+                        String age = dataSnapshot.child("Age").getValue().toString();
 
                         donorNames.add(name);
                         donorLocality.add(locality);
                         donorHistory.add(history);
                         donorPhones.add(phone);
                         donorKeys.add(key);
-                        donorBirthdays.add(birthday);
+                        donorAges.add(age);
 
                     }
 
@@ -144,8 +150,8 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
                     String [] namesArr = new String[donorNames.size()];
                     namesArr = donorNames.toArray(namesArr);
 
-                    String [] birthdaysArr = new String[donorBirthdays.size()];
-                    birthdaysArr = donorBirthdays.toArray(birthdaysArr);
+                    String [] birthdaysArr = new String[donorAges.size()];
+                    birthdaysArr = donorAges.toArray(birthdaysArr);
 
                     String [] historiesArr = new String[donorHistory.size()];
                     historiesArr = donorHistory.toArray(historiesArr);
@@ -167,17 +173,16 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                             String name = donorNames.get(position);
-                            String key = donorKeys.get(position);
                             String phone = donorPhones.get(position);
 
                             // Show alert to send requests
                             new AlertDialog.Builder(AdminActivity.this)
-                                    .setTitle("Send Request to " + name + "?")
-                                    .setMessage("A request for donation will be sent to the donor via SMS.")
+                                    .setTitle("Make a phone call to " + name + "?")
+                                    .setMessage("You will be connected to " + name + " via a phone call immediately.")
 
                                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
-                                            sendRequest (name, key, phone);
+                                            makeCall (phone);
                                         }
                                     })
 
@@ -202,64 +207,46 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
 
     public void clearLists () {
         donorNames.clear();
-        donorBirthdays.clear();
+        donorAges.clear();
         donorKeys.clear();
         donorPhones.clear();
         donorLocality.clear();
         donorHistory.clear();
     }
 
-    public void sendRequest (String name, String key, String phone) {
+    public void makeCall (String phone) {
 
-        // Extracting facility details
+        // Making Phone Call
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
 
-        String userPhone = phone.replace("+91", "");
-        String facilityMail = getSharedPreferences("login", MODE_PRIVATE).getString("email", "");
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.CALL_PHONE},
+                    123);
+        } else {
+            startActivity(new Intent(Intent.ACTION_CALL).setData(Uri.parse("tel:" + phone)));
+        }
 
-        reference = FirebaseDatabase.getInstance().getReference().child("Healthcare").child(facilityMail);
-        reference.addValueEventListener(new ValueEventListener() {
+    }
 
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                facilityName = snapshot.child("Name").getValue().toString();
-                facilityPhone = snapshot.child("Phone").getValue().toString();
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
 
-                messageContent = "Hi " + name + ", you have received a platelet donation request from " + facilityName + ". Please open the Pledge Platelets app to accept their request to set up an appointment. Facility's contact: " + facilityPhone;
+            case 123:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
 
-                // Adding to Firebase
-                String requestKey = FirebaseDatabase.getInstance().getReference().child("Donors").child(selectedLocation).child(key).child("Requests").push().getKey();
-                reference = FirebaseDatabase.getInstance().getReference().child("Donors").child(selectedLocation).child(key).child("Requests").child(requestKey);
-                reference.child("Name").setValue(facilityName);
-                reference.child("Phone").setValue(facilityPhone);
 
-                // Sending SMS
-                OkHttpClient client = new OkHttpClient();
-                String url = "https://platform.clickatell.com/messages/http/send?apiKey=" + CLICKATELL_KEY + "&to=91" + userPhone + "&content=" + messageContent;
 
-                Request request = new Request.Builder()
-                        .url(url)
-                        .build();
+                } else {
+                    Toast.makeText(this, "The permission to call was denied. Please go to Settings > Pledge Platelets to allow calls.", Toast.LENGTH_LONG).show();
+                }
+                break;
 
-                Toast.makeText(getApplicationContext(), "A request has been sent to " + name + " successfully.", Toast.LENGTH_LONG).show();
-
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        Toast.makeText(getApplicationContext(), "Sorry, the request could not be sent. Please try again later.", Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+            default:
+                break;
+        }
     }
 
     @Override
@@ -316,7 +303,7 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
             name.setText(names[position]);
             locality.setText("Locality: " + localities[position]);
             history.setText("Medical History: " + histories[position]);
-            birthday.setText("Birthday: " + birthdays[position]);
+            birthday.setText("Age: " + birthdays[position] + " years old");
 
             return row;
         }

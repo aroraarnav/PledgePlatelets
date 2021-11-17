@@ -32,7 +32,7 @@ public class OtpActivity extends AppCompatActivity {
     private String phone;
     private String location;
     private String medicalHistory;
-    private String birthday;
+    private String age;
     private String locality;
 
     // Items
@@ -66,7 +66,7 @@ public class OtpActivity extends AppCompatActivity {
         phone = getIntent().getStringExtra("phone");
         location = getIntent().getStringExtra("location");
         medicalHistory = getIntent().getStringExtra("medicalHistory");
-        birthday = getIntent().getStringExtra("birthday");
+        age = getIntent().getStringExtra("age");
 
         mAuth = FirebaseAuth.getInstance();
         sendVerificationCode (phone);
@@ -142,7 +142,7 @@ public class OtpActivity extends AppCompatActivity {
         reference.child("Donors").child(location).child(userKey).child("Name").setValue(name);
         reference.child("Donors").child(location).child(userKey).child("Locality").setValue(locality);
         reference.child("Donors").child(location).child(userKey).child("Key").setValue(userKey);
-        reference.child("Donors").child(location).child(userKey).child("Birthday").setValue(birthday);
+        reference.child("Donors").child(location).child(userKey).child("Age").setValue(age);
         reference.child("Donors").child(location).child(userKey).child("Phone").setValue(phone);
         reference.child("Donors").child(location).child(userKey).child("Medical History").setValue(medicalHistory);
 
