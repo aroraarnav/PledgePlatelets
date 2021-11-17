@@ -13,9 +13,7 @@
         android:textSize="18sp"
         android:layout_margin="20dp"
         android:text="Please select a location below to check available donors:"
-        android:textColor="@color/themeColor"
-
-        />
+        android:textColor="@color/themeColor" />
 
     <Spinner
         android:id="@+id/adminSpinner"
@@ -26,11 +24,21 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="0dp"/>
 
-    <ListView
+        />
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/donorListView"
+        >
 
-        />
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/donorListView"
+            >
+        </ListView>
+
+
+    </FrameLayout>
 
 </LinearLayout>

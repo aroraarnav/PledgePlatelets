@@ -46,8 +46,7 @@ public class DonorActivity extends AppCompatActivity {
         donorKey = getSharedPreferences("login", MODE_PRIVATE).getString("key", "");
         location = getSharedPreferences("login", MODE_PRIVATE).getString("location", "");
 
-        reference = FirebaseDatabase.getInstance().getReference().child("Donors").child(location).child(donorKey);
-        reference.addValueEventListener(new ValueEventListener() {
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String name = snapshot.child("Name").getValue().toString();
@@ -58,7 +57,10 @@ public class DonorActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
+
+        reference = FirebaseDatabase.getInstance().getReference().child("Donors").child(location).child(donorKey);
+        reference.addValueEventListener(listener);
 
         optOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,13 +73,16 @@ public class DonorActivity extends AppCompatActivity {
                         .setPositiveButton("Opt Out", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
+                                reference.removeEventListener(listener);
+
+                                FirebaseDatabase.getInstance().getReference().child("Donors").child(location).child(donorKey)
+                                .removeValue();
+
+
                                 SharedPreferences.Editor editor = getSharedPreferences("login", MODE_PRIVATE).edit();
                                 editor.putString("key", null).apply();
                                 editor.putString("location", null).apply();
                                 editor.putBoolean("loggedInDonor", false).apply();
-
-                                reference = FirebaseDatabase.getInstance().getReference().child("Donors").child(location).child(donorKey);
-                                reference.setValue(null);
 
                                 Intent intent = new Intent (DonorActivity.this, MainActivity.class);
                                 startActivity(intent);

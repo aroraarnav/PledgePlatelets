@@ -25,19 +25,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Checking for Login Sessions
 
-//        if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInDonor", false)) {
-//            // Take to Donor Page
-//            Intent intent = new Intent(this, DonorActivity.class);
-//            startActivity(intent);
-//        }
-
-//        if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInAdmin", false)) {
-//            // Take to Admin Page
-//            Intent intent = new Intent(this, AdminActivity.class);
-//            startActivity(intent);
-//        }
-
-
+        if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInDonor", false)) {
+            // Take to Donor Page
+            Intent intent = new Intent(this, DonorActivity.class);
+            startActivity(intent);
+            }
+        else if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInAdmin", false)){
+            // Take to Admin Page
+            Intent intent = new Intent(this, AdminActivity.class);
+            startActivity(intent);
+        }
 
         // ActionBar
         ActionBar actionBar = getSupportActionBar();
