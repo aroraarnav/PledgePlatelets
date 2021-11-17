@@ -3,9 +3,11 @@ package com.example.pledgeplatelets;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +25,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class AdminActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -31,6 +40,7 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
     private Spinner adminSpinner;
     private DatabaseReference reference;
 
+    // ArrayLists
     private ArrayList<String> donorNames;
     private ArrayList<String> donorLocality;
     private ArrayList<String> donorHistory;
@@ -38,10 +48,19 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
     private ArrayList<String> donorKeys;
     private ArrayList<String> donorBirthdays;
 
+    // Strings
+    String facilityName;
+    String facilityPhone;
+    String selectedLocation;
+    String CLICKATELL_KEY;
+    String messageContent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
+
+        CLICKATELL_KEY = "b8wbV-efSxqmwm93i6ijAw==";
 
         // ActionBar
         ActionBar actionBar = getSupportActionBar();
@@ -49,6 +68,8 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
 
         adminSpinner = (Spinner) findViewById(R.id.adminSpinner);
         listView = (ListView) findViewById(R.id.donorListView);
+
+
 
         donorNames = new ArrayList<String> ();
         donorHistory = new ArrayList<String> ();
@@ -68,6 +89,9 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                locationList.clear();
+
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                     locationList.add (snapshot.getKey());
                 }
@@ -88,17 +112,15 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
 
         if (!location.equals("SELECT YOUR LOCATION")) {
 
-            donorNames.clear();
-            donorBirthdays.clear();
-            donorKeys.clear();
-            donorPhones.clear();
-            donorLocality.clear();
-            donorHistory.clear();
+            clearLists();
 
             reference = FirebaseDatabase.getInstance().getReference().child("Donors").child(location);
             reference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    clearLists();
+
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
 
                         String name = dataSnapshot.child("Name").getValue().toString();
@@ -143,7 +165,27 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            // Activity Shift
+
+                            String name = donorNames.get(position);
+                            String key = donorKeys.get(position);
+                            String phone = donorPhones.get(position);
+
+                            // Show alert to send requests
+                            new AlertDialog.Builder(AdminActivity.this)
+                                    .setTitle("Send Request to " + name + "?")
+                                    .setMessage("A request for donation will be sent to the donor via SMS.")
+
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            sendRequest (name, key, phone);
+                                        }
+                                    })
+
+                                    // Null Listener
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
+
                         }
                     });
 
@@ -158,6 +200,68 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
         }
     }
 
+    public void clearLists () {
+        donorNames.clear();
+        donorBirthdays.clear();
+        donorKeys.clear();
+        donorPhones.clear();
+        donorLocality.clear();
+        donorHistory.clear();
+    }
+
+    public void sendRequest (String name, String key, String phone) {
+
+        // Extracting facility details
+
+        String userPhone = phone.replace("+91", "");
+        String facilityMail = getSharedPreferences("login", MODE_PRIVATE).getString("email", "");
+
+        reference = FirebaseDatabase.getInstance().getReference().child("Healthcare").child(facilityMail);
+        reference.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                facilityName = snapshot.child("Name").getValue().toString();
+                facilityPhone = snapshot.child("Phone").getValue().toString();
+
+                messageContent = "Hi " + name + ", you have received a platelet donation request from " + facilityName + ". Please open the Pledge Platelets app to accept their request to set up an appointment. Facility's contact: " + facilityPhone;
+
+                // Adding to Firebase
+                String requestKey = FirebaseDatabase.getInstance().getReference().child("Donors").child(selectedLocation).child(key).child("Requests").push().getKey();
+                reference = FirebaseDatabase.getInstance().getReference().child("Donors").child(selectedLocation).child(key).child("Requests").child(requestKey);
+                reference.child("Name").setValue(facilityName);
+                reference.child("Phone").setValue(facilityPhone);
+
+                // Sending SMS
+                OkHttpClient client = new OkHttpClient();
+                String url = "https://platform.clickatell.com/messages/http/send?apiKey=" + CLICKATELL_KEY + "&to=91" + userPhone + "&content=" + messageContent;
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .build();
+
+                Toast.makeText(getApplicationContext(), "A request has been sent to " + name + " successfully.", Toast.LENGTH_LONG).show();
+
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        Toast.makeText(getApplicationContext(), "Sorry, the request could not be sent. Please try again later.", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     @Override
     public void onBackPressed () {
         // Do nothing OnBackPressed
@@ -165,7 +269,7 @@ public class AdminActivity extends AppCompatActivity implements AdapterView.OnIt
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String selectedLocation = parent.getItemAtPosition(position).toString();
+        selectedLocation = parent.getItemAtPosition(position).toString();
         locationSelected(selectedLocation);
     }
 

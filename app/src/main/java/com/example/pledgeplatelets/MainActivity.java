@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 //            Intent intent = new Intent(this, DonorActivity.class);
 //            startActivity(intent);
 //        }
-//
+
         if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInAdmin", false)) {
             // Take to Admin Page
             Intent intent = new Intent(this, AdminActivity.class);
