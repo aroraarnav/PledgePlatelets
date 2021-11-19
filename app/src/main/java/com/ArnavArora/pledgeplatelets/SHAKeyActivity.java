@@ -1,16 +1,17 @@
-package com.example.pledgeplatelets;
+package com.ArnavArora.pledgeplatelets;
 
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
 
+import com.ArnavArora.pledgeplatelets.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.pledgeplatelets.databinding.ActivityShakeyBinding;
+import com.ArnavArora.pledgeplatelets.databinding.ActivityShakeyBinding;
 
 public class SHAKeyActivity extends FragmentActivity implements OnMapReadyCallback {
 

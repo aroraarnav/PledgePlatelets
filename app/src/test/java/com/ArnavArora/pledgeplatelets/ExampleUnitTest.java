@@ -1,4 +1,4 @@
-package com.example.pledgeplatelets;
+package com.ArnavArora.pledgeplatelets;
 
 import org.junit.Test;
 

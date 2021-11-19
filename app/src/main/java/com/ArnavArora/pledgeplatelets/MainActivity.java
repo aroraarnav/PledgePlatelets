@@ -1,4 +1,4 @@
-package com.example.pledgeplatelets;
+package com.ArnavArora.pledgeplatelets;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,8 +7,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Button;
+
+import com.ArnavArora.pledgeplatelets.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,16 +26,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Checking for Login Sessions
 
-        if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInDonor", false)) {
-            // Take to Donor Page
-            Intent intent = new Intent(this, DonorActivity.class);
-            startActivity(intent);
-            }
-        else if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInAdmin", false)){
-            // Take to Admin Page
-            Intent intent = new Intent(this, AdminActivity.class);
-            startActivity(intent);
-        }
+//        if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInDonor", false)) {
+//            // Take to Donor Page
+//            Intent intent = new Intent(this, DonorActivity.class);
+//            startActivity(intent);
+//            }
+//        else if (getSharedPreferences("login", MODE_PRIVATE).getBoolean("loggedInAdmin", false)){
+//            // Take to Admin Page
+//            Intent intent = new Intent(this, AdminActivity.class);
+//            startActivity(intent);
+//        }
 
         // ActionBar
         ActionBar actionBar = getSupportActionBar();
