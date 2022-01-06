@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "299234485450",
+    "firebase_url": "https://pledge-platelets-default-rtdb.firebaseio.com",
+    "project_id": "pledge-platelets",
+    "storage_bucket": "pledge-platelets.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299234485450:android:c581ae26d362d560a44033",
+        "android_client_info": {
+          "package_name": "com.ArnavArora.pledgeplatelets"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299234485450-gdo5kceo2s9ag01o5v7vpbojg1572krn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ArnavArora.pledgeplatelets",
+            "certificate_hash": "8c922d6173e824abc2025de869dc32a85a1e55ff"
+          }
+        },
+        {
+          "client_id": "299234485450-u5ja3ppfseqpdikmibiiqcs0c3ie5hqi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcQ2heRFfpjZ5pn7OrrupufwUJg_7EpXM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299234485450-u5ja3ppfseqpdikmibiiqcs0c3ie5hqi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
